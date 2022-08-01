@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_variant">#f94144</color>
+    <color name="secondary">#06d6a0</color>
+    <color name="primary">#ff595e</color>
+    <color name="secondary_variant">#43aa8b</color>
+    <color name="white">#f8f9fa</color>
+    <color name="background_01">#E7ECEF</color>
+    <color name="background_02">#eff1f3</color>
+    <color name="avatar_01">#f28482</color>
+    <color name="avatar_02">#f6bd60</color>
+    <color name="avatar_03">#adc178</color>
+    <color name="avatar_04">#b8c0ff</color>
+    <color name="avatar_05">#a9def9</color>
+    <color name="avatar_06">#94d2bd</color>
+
+    <color name="user_chat">#a3b18a</color>
+    <color name="user_avatar">#84a59d</color>
+    <color name="contact_chat">#f4978e</color>
+    <color name="contact_avatar_text">#6D4C41</color>
+    <color name="contact_avatar">#f28482</color>
+
+    <color name="contact_online">#8ac926</color>
+    <color name="contact_offline">#ced4da</color>
+
+    <color name="black">#333533</color>
+    <color name="grey">#6c757d</color>
+    <color name="lighter_grey_45">#adb3b8</color>
+    <color name="lighter_grey_35">#9ea5ac</color>
+</resources>

@@ -1,0 +1,30 @@
+pluginManagement {
+    plugins {
+        id("com.google.devtools.ksp") version "1.6.21-1.0.5"
+        id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+        id 'com.android.library' version '7.1.2'
+        id 'org.jetbrains.kotlin.android' version '1.7.10'
+    }
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+rootProject.name = "chatroom"
+include ':app'
+
+include ':di-jinko-core'
+include ':di-jinko'
+include ':di-jinko-processor-core'
+include ':di-jinko-processor'
+include ':di-jinko-android'

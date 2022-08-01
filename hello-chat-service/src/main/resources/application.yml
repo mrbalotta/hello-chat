@@ -1,0 +1,8 @@
+server:
+    port: 9090
+logging:
+    level:
+        root: DEBUG
+
+logging.level.org.springframework.web: trace
+logging.level.org.apache: trace
