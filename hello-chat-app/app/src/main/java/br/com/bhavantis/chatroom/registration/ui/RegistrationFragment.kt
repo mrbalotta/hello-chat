@@ -31,18 +31,18 @@ class RegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val registrationBtn = view.findViewById<Button>(R.id.registerBtn)
-        edit = view.findViewById(R.id.name)
+        edit = view.findViewById(R.id.nickname)
         registrationBtn.setOnClickListener {
             onRegistrate()
         }
     }
 
     private fun onRegistrate() {
-        Log.d("ALE", "onRegistrate")
         val text = edit.text
         if(text.isNotEmpty()) {
-            edit.text.clear()
+            Log.d("ALE", "onRegistrate: $text")
             viewModel.registrate(text.toString())
+            edit.text.clear()
         }
     }
 

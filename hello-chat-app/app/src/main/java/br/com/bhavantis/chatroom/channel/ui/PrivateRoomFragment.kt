@@ -47,6 +47,7 @@ class PrivateRoomFragment: Fragment() {
     private fun sendMessage(editText: EditText) {
         if(editText.text.isNotEmpty()) {
             viewModel.sendMessage(editText.text.toString())
+            editText.text.clear()
         }
     }
 

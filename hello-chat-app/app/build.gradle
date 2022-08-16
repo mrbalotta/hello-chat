@@ -3,8 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id "com.google.devtools.ksp"
     id 'org.jetbrains.kotlin.plugin.serialization'
-
-//    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 android {
@@ -45,7 +43,7 @@ android {
 
 dependencies {
     def nav_version = "2.5.0"
-    def ktor_version = '1.6.4'
+    def ktor_version = '2.0.3'
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
@@ -71,29 +69,17 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
-
-
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-
-
-
+    //implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    //implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //Ktor dependencies
     implementation "io.ktor:ktor-client-core:$ktor_version"
-
-    // HTTP engine: The HTTP client used to perform network requests.
-
     //implementation "io.ktor:ktor-client-android:$ktor_version"
-    //implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-    implementation("io.ktor:ktor-client-cio:$ktor_version")
-
-    // The serialization engine used to convert objects to and from JSON.
-    implementation "io.ktor:ktor-client-serialization:$ktor_version"
-
-//    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"
-
-    // Logging
+    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+    //implementation "io.ktor:ktor-client-cio:$ktor_version"
+    implementation "io.ktor:ktor-serialization-gson:$ktor_version"
+    implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
+    implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
     implementation "io.ktor:ktor-client-logging:$ktor_version"
 
     implementation project(':di-jinko-core')

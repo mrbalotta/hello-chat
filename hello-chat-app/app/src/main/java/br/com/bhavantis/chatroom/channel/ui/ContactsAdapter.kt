@@ -34,7 +34,7 @@ class ContactsAdapter(
             card = view.findViewById(R.id.card_row)
             avatar = view.findViewById(R.id.avatar)
             username = view.findViewById(R.id.username)
-            name = view.findViewById(R.id.name)
+            name = view.findViewById(R.id.nickname)
             status = view.findViewById(R.id.status)
             bar = view.findViewById(R.id.contact_item_bar)
         }
@@ -88,8 +88,16 @@ class ContactsAdapter(
     override fun getItemCount() = dataset.size
 
     fun addContact(contact: User) {
-        dataset.add(contact)
-        //notifyItemInserted(dataset.size - 1)
+        val filteredList = dataset.filter {
+            it.id == contact.id
+        }
+        if(filteredList.isNotEmpty()) {
+            val contactInList = filteredList.first()
+            contactInList.sentMessage = contact.sentMessage
+            contactInList.online = contact.online
+        } else {
+            dataset.add(contact)
+        }
         Log.d("ALE", "adapter received ${contact.nickname}")
         notifyDataSetChanged()
     }

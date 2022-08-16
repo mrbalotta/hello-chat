@@ -19,8 +19,8 @@ class StompMessagingBroker(
     private val observerContext = Schedulers.single()
 
     override fun connect(listener: ConnectionListener) {
-        logger.info("ICHAT", "running 'StompMessagingBroker.connect' on: ${Thread.currentThread().name}")
-        logger.info("ICHAT", "try to connect to $url")
+        logger.info("CHAT", "running 'StompMessagingBroker.connect' on: ${Thread.currentThread().name}")
+        logger.info("CHAT", "try to connect to $url")
         prepareClient(listener)
         stompClient.connect()
     }
@@ -35,7 +35,7 @@ class StompMessagingBroker(
     }
 
     private fun handleStompLifecycleEvent(event: LifecycleEvent, listener: ConnectionListener) {
-        logger.info("ICHAT", "running 'StompMessagingBroker.handleStompLifecycleEvent' on: ${Thread.currentThread().name}")
+        logger.info("CHAT", "running 'StompMessagingBroker.handleStompLifecycleEvent' on: ${Thread.currentThread().name}")
         when (event.type!!) {
             LifecycleEvent.Type.CLOSED -> { listener.onClosed(this) }
             LifecycleEvent.Type.ERROR -> { listener.onFailed(this, event.exception) }
@@ -45,26 +45,29 @@ class StompMessagingBroker(
     }
 
     override fun disconnect() {
-        logger.info("ICHAT", "running 'StompMessagingBroker.disconnect' on: ${Thread.currentThread().name}")
+        logger.info("CHAT", "running 'StompMessagingBroker.disconnect' on: ${Thread.currentThread().name}")
         stompClient.disconnect()
     }
 
     override fun send(destination: String, message: Any) {
-        logger.info("ICHAT", "running 'StompMessagingBroker.send' on: ${Thread.currentThread().name}")
+        logger.info("CHAT", "running 'StompMessagingBroker.send' on: ${Thread.currentThread().name}")
         val disposable = stompClient
             .send(destination, parser.toJson(message))
             .subscribeOn(Schedulers.io())
             .subscribe() {
-                logger.info("ICHAT", "running 'StompMessagingBroker.send (subscribe)' on: ${Thread.currentThread().name}")
+                logger.info("CHAT", "running 'StompMessagingBroker.send (subscribe)' on: ${Thread.currentThread().name}")
             }
         compositeDisposable.add(disposable)
     }
 
     override fun subscribe(topic: String, listener: MessagingListener) {
-        logger.info("ICHAT", "running 'StompMessagingBroker.subscribe' on: ${Thread.currentThread().name}")
+        logger.info("CHAT", "running 'StompMessagingBroker.subscribe' on: ${Thread.currentThread().name}")
         val disposable = stompClient
             .topic(topic)
-            .subscribe { listener.onMessage(topic, it.payload) }
+            .subscribe {
+                logger.info("CHAT", "received on subscribe: topic=$topic | message=${it.payload}")
+                listener.onMessage(topic, it.payload)
+            }
         compositeDisposable.add(disposable)
     }
 

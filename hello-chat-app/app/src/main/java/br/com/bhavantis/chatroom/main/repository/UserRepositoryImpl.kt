@@ -6,7 +6,9 @@ import br.com.bhavantis.chatroom.core.model.User
 import br.com.bhavantis.chatroom.registration.domain.UserRegistrationRepository
 import br.com.bhavantis.jinko.di.inject
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 
 object UserRepositoryImpl: UserRegistrationRepository, ContactsRepository, PrivateRoomRepository {
 
@@ -16,7 +18,7 @@ object UserRepositoryImpl: UserRegistrationRepository, ContactsRepository, Priva
     private lateinit var currentUser: User
 
     override suspend fun getContacts(): List<User> {
-        return httpClient.get("${config.getUrl()}/contacts")
+        return httpClient.get("${config.getUrl()}/contacts").body()
     }
 
     override suspend fun getCurrentUser(): User {
@@ -24,10 +26,10 @@ object UserRepositoryImpl: UserRegistrationRepository, ContactsRepository, Priva
     }
 
     override suspend fun save(user: User): User {
-
         return httpClient.post("${config.getUrl()}/contacts") {
-            body = user
-        }
+            contentType(ContentType.Application.Json)
+            setBody(user)
+        }.body()
     }
 
     override suspend fun setCurrentUser(user: User) {

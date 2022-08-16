@@ -5,7 +5,7 @@ data class ChatMessage(
     val topic: String = "",
     val sender: User,
     val receiver: User,
-    val content: String
+    val content: String = ""
 ) {
     fun isSelf() = sender == receiver
 }

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class User(
     val id: String = "",
     val nickname: String = "",
-    val online: Boolean = false,
-    val sentMessage: Boolean = false
+    var online: Boolean = false,
+    var sentMessage: Boolean = false
 )

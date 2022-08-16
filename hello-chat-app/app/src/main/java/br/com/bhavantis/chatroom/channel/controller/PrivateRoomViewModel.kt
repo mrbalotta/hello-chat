@@ -59,6 +59,7 @@ class PrivateRoomViewModel: ViewModel() {
                 content = msg
             )
             chat.send("/chat/private", chatMessage)
+            messagesLiveData.postValue(chatMessage)
         }
     }
 

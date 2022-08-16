@@ -2,6 +2,7 @@ package br.com.bhavantis.chat.controller
 
 import br.com.bhavantis.chat.model.ChatMessage
 import br.com.bhavantis.chat.model.User
+import br.com.bhavantis.chat.service.ChatIdGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -16,8 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
+
 @RestController
-class ChatController(private val messagingTemplate: SimpMessagingTemplate) {
+class ChatController(
+    private val messagingTemplate: SimpMessagingTemplate,
+    private val idGenerator: ChatIdGenerator
+) {
 
     private val context = newSingleThreadContext("chat-controller")
 
@@ -42,17 +47,28 @@ class ChatController(private val messagingTemplate: SimpMessagingTemplate) {
 
     @PostMapping("/api/contacts")
     fun createUser(@RequestBody user: User): User {
+        val registration = User(
+            id = idGenerator.generate(),
+            nickname = user.nickname,
+            online = true
+        )
 
         CoroutineScope(context).launch {
-            users.add(user)
+            users.add(registration)
         }
 
-        messagingTemplate.convertAndSend("/contacts", user)
-        return user
+        messagingTemplate.convertAndSend("/room/contacts", getChatMessageFromUser("/room/contacts", registration))
+        return registration
     }
 
     @GetMapping("/api/contacts")
     fun getUsers(): List<User> {
         return users
     }
+
+    private fun getChatMessageFromUser(topic: String, user: User) = ChatMessage(
+        sender = user,
+        topic = topic,
+        receiver = User(id="ALL", nickname = "ALL")
+    )
 }

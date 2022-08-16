@@ -1,5 +1,6 @@
 package br.com.bhavantis.chatroom.main
 
+import android.util.Log
 import br.com.bhavantis.chatroom.BuildConfig
 import br.com.bhavantis.chatroom.channel.domain.ContactsRepository
 import br.com.bhavantis.chatroom.channel.domain.PrivateRoomRepository
@@ -18,13 +19,13 @@ import br.com.bhavantis.jinko.di.get
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.serialization.gson.*
 
 @Provider
 class Configuration {
@@ -61,16 +62,17 @@ class Configuration {
     fun getPrivateRoomRepository(): PrivateRoomRepository = UserRepositoryImpl
 
     @Bean @Single
-    fun gson(): Gson = GsonBuilder().create()
+    fun gsonBuilder(): Gson = GsonBuilder().create()
 
     @Bean @Single
     fun getHttpClient(): HttpClient {
-        return HttpClient(CIO) {
+        return HttpClient(OkHttp) {
             install(Logging) {
                 level = LogLevel.ALL
+                logger = CustomLogger
             }
-            install(JsonFeature) {
-                serializer = KotlinxSerializer(json)
+            install(ContentNegotiation) {
+                gson()
                 //or serializer = KotlinxSerializer()
             }
             install(HttpTimeout) {
@@ -81,16 +83,15 @@ class Configuration {
             defaultRequest {
                 // Parameter("api_key", "some_api_key")
                 // Content Type
-                //if (method != HttpMethod.Get)
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
             }
         }
     }
 
-    private val json = kotlinx.serialization.json.Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        encodeDefaults = false
+    private object CustomLogger: Logger {
+        override fun log(message: String) {
+            Log.i("ALE", message)
+        }
     }
 }

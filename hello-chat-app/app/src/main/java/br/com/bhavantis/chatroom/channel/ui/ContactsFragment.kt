@@ -21,7 +21,7 @@ class ContactsFragment: Fragment(), ContactSelectionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getContactsLiveData().observe(this) { onContactsArrived(it) }
+        viewModel.getContactLiveData().observe(this) { onContactsArrived(it) }
         viewModel.getAllContactsLiveData().observe(this) { adapter.addAll(it) }
         viewModel.getPrivateMessageLiveData().observe(this) { onPrivateMessageArrived(it) }
     }
@@ -41,7 +41,7 @@ class ContactsFragment: Fragment(), ContactSelectionListener {
     }
 
     private fun onPrivateMessageArrived(chatMessage: ChatMessage) {
-        TODO("Not yet implemented")
+        adapter.addContact(chatMessage.sender)
     }
 
     private fun setupListUpdate() {
@@ -55,10 +55,9 @@ class ContactsFragment: Fragment(), ContactSelectionListener {
         list.adapter = adapter
     }
 
-    private fun onContactsArrived(user: User) {
-        Log.d("ALE", "onContactsArrived ${user.nickname}")
-
-        adapter.addContact(user)
+    private fun onContactsArrived(user: ChatMessage) {
+        Log.d("ALE", "onContactsArrived ${user.sender}")
+        adapter.addContact(user.sender)
     }
 
     private fun navigateToPrivate(speaker: User) {

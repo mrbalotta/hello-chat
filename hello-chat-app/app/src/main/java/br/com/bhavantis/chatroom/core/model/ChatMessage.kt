@@ -4,11 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ChatMessage(
-    val id: String = "",
+    var id: String = "SELF",
     val topic: String = "",
     val sender: User,
     val receiver: User,
     val content: String
 ) {
-    fun isSelf() = sender == receiver
+    fun isSelf() = id == "SELF"
 }

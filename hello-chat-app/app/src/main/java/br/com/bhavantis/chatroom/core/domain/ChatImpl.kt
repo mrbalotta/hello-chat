@@ -45,7 +45,7 @@ class ChatImpl(
     }
 
     override fun onMessage(topic: String, message: String) {
-        logger.info("ICHAT", "running 'StompMessagingBroker.onMessage (before coroutine)' on: ${Thread.currentThread().name}")
+        logger.info("ALE", "onMessage running on: ${Thread.currentThread().name} | topic=$topic | message =$message")
         val parsedMessage = parser.fromJson(message, ChatMessage::class.java)
         observers[topic]?.forEach { it.onMessageReceived(parsedMessage) }
     }
@@ -57,16 +57,19 @@ class ChatImpl(
         override fun onOpened(broker: MessagingBroker) {
             connected = true
             connectionListener.onOpened(broker)
+            logger.info("ALE", "chat connection opened")
         }
 
         override fun onClosed(broker: MessagingBroker) {
             connected = false
             connectionListener.onClosed(broker)
+            logger.warn("ALE", "chat connection closed")
         }
 
         override fun onFailed(broker: MessagingBroker, throwable: Throwable) {
             observers.clear()
             connectionListener.onFailed(broker, throwable)
+            logger.error("ALE", "connection failed", throwable)
         }
     }
 }

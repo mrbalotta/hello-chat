@@ -30,7 +30,7 @@ internal class PrivateRoomAdapter(dataset: MutableList<ChatMessage> = mutableLis
     override fun getLayoutRight(): Int = R.layout.chat_row_right
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        //holder.username.text = dataset[position].username.trim()
-        //holder.message.text = dataset[position].text.trim()
+        holder.username.text = dataset[position].sender.nickname.trim()
+        holder.message.text = dataset[position].content.trim()
     }
 }

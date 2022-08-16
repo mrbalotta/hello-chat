@@ -1,5 +1,6 @@
 package br.com.bhavantis.chatroom.channel.controller
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,42 +10,47 @@ import br.com.bhavantis.chatroom.core.domain.Chat
 import br.com.bhavantis.chatroom.core.domain.ChatMessageObserver
 import br.com.bhavantis.chatroom.core.model.ChatMessage
 import br.com.bhavantis.chatroom.core.model.User
+import br.com.bhavantis.chatroom.infrastructure.messaging.AbstractConnectionListener
+import br.com.bhavantis.chatroom.infrastructure.messaging.ConnectionListener
+import br.com.bhavantis.chatroom.infrastructure.messaging.MessagingBroker
 import br.com.bhavantis.jinko.di.inject
 import kotlinx.coroutines.*
 
 class ContactsViewModel: ViewModel() {
     private val contactsRepository: ContactsRepository by inject()
     private val chat: Chat by inject()
-    private val contactLiveData = MutableLiveData<User>()
-    private val allContactsLiveData = MutableLiveData<List<User>>()
+    private val contactLiveData = MutableLiveData<ChatMessage>()
     private val privateMessageLiveData = MutableLiveData<ChatMessage>()
+    private val allContactsLiveData = MutableLiveData<List<User>>()
 
     fun startUpdatingContactList() {
         viewModelScope.launch {
-            if(chat.isConnected()) {
-                chat.subscribe("/contacts", ContactsObserver())
-                val user = contactsRepository.getCurrentUser()
-                chat.subscribe("/user/${user.id}/private", PrivateMessageObserver())
-            }
+            Log.d("ALE", "start updating on ${Thread.currentThread().name}")
+            chat.connect(AutoSubscription())
         }
     }
 
     fun getAllContacts() {
         viewModelScope.launch {
-            val contacts = contactsRepository.getContacts()
+            Log.d("ALE", "get all contacts on ${Thread.currentThread().name}")
+            val contacts = contactsRepository.getContacts().filter {
+                it.id != contactsRepository.getCurrentUser().id
+            }
             withContext(Dispatchers.Main) {
-                allContactsLiveData.value = contacts
+                Log.d("ALE", "received all contacts on ${Thread.currentThread().name}")
+                if(contacts.isNotEmpty()) allContactsLiveData.value = contacts
             }
         }
     }
 
     fun getAllContactsLiveData(): LiveData<List<User>> = allContactsLiveData
-    fun getContactsLiveData(): LiveData<User> = contactLiveData
+    fun getContactLiveData(): LiveData<ChatMessage> = contactLiveData
     fun getPrivateMessageLiveData(): LiveData<ChatMessage> = privateMessageLiveData
 
     private inner class ContactsObserver: ChatMessageObserver {
         override fun onMessageReceived(message: ChatMessage) {
-            contactLiveData.postValue(message.sender)
+            Log.d("ALE", "contact received: ${message.sender} ")
+            contactLiveData.postValue(message)
         }
     }
 
@@ -53,9 +59,21 @@ class ContactsViewModel: ViewModel() {
 
         override fun onMessageReceived(message: ChatMessage) {
             CoroutineScope(context).launch {
+                Log.d("ALE", "received private message on ${Thread.currentThread().name}")
+                message.sender.sentMessage = true
                 privateMessageLiveData.postValue(message)
             }
         }
+    }
 
+    private inner class AutoSubscription: AbstractConnectionListener() {
+        override fun onOpened(broker: MessagingBroker) {
+            viewModelScope.launch {
+                Log.d("ALE", "auto subscription")
+                chat.subscribe("/room/contacts", ContactsObserver())
+                val user = contactsRepository.getCurrentUser()
+                chat.subscribe("/user/${user.id}/private", PrivateMessageObserver())
+            }
+        }
     }
 }
